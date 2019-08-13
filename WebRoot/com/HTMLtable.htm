@@ -1,0 +1,106 @@
+<HTML><HEAD><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+<meta HTTP-EQUIV=Expires CONTENT=0><Link rel="stylesheet" type="text/css" href="pop.css">
+<title>表格属性定义</title>
+<script language=javascript src=psub.jsp></script>
+<script language="JavaScript">
+function SetColor(oImg)
+{
+	var color = SelectColor(oImg);
+	if (color)
+		oImg.style.backgroundColor = color;
+}
+
+function ConfirmDlg()
+{
+var nRow, nCol, sTable, width;
+	var nRow = Number(oRow.value);
+	if ((nRow < 1) || isNaN(nRow))
+	{
+		alert("表格行数应输入正整数");
+		oRow.focus();
+		return;
+	}	
+	var nCol = Number(oCol.value);
+	if ((nCol < 1) || isNaN(nCol))
+	{
+		alert("表格行数应输入正整数");
+		oCol.focus();
+		return;
+	}
+	if (oWidth.value == "")
+		width = ""
+	else
+		width = oWidth.value + oWidthUnit.value;
+	if (oCheck.checked)
+	{
+		sTable = "<table align='" + oAlign.value + "' border=0 width='" + width + "' bgcolor='" +
+			oBordercolor.value + "' cellpadding='" + oCellpadding.value + "' cellspacing=1 width=100%" + ">";
+			for (var x = 0 ; x < nRow; x++)
+			{
+				sTable = sTable + "<tr>";
+				for (var y = 0; y < nCol; y++)
+					sTable = sTable + "<td bgcolor='" + oBgcolor.value + "'>&nbsp;</td>";
+				sTable = sTable + "</tr>";
+			}
+		window.returnValue = sTable + "</table></td></tr></table>";
+	}
+	else
+	{
+		sTable = "<table align='" + oAlign.value + "' border='" + oBorder.value + "' cellpadding='" + 
+			oCellpadding.value + "' cellspacing='" + oCellspacing.value + "' width='" + width + 
+			"' bordercolor='" + oBordercolor.value + "' bgcolor='" + oBgcolor.value + "'>";
+			for (var x = 0 ; x < nRow; x++)
+			{
+				sTable = sTable + "<tr>";
+				for (var y = 0; y < nCol; y++)
+					sTable = sTable + "<td>&nbsp;</td>";
+				sTable = sTable + "</tr>";
+			}
+		window.returnValue = sTable + "</table>";
+	}
+	window.close();
+}
+</SCRIPT>
+</head>
+<body bgcolor=menu>
+<table border=0 cellpadding=0 cellspacing=0 align=center>
+<tr><td><fieldset><legend>表格大小</legend>
+<table border=0 cellpadding=0 cellspacing=0><tr><td colspan=9 height=5></td></tr>
+	<tr><td width=7></td><td>表格行数:</td><td width=5></td>
+	<td><input type=text id=oRow size=10 value=3 maxlength=3></td>
+	<td width=40></td><td>表格列数:</td><td width=5></td>
+	<td><input type=text id=oCol size=10 value=2 maxlength=3></td>
+	<td width=7></td></tr><tr><td colspan=9 height=5></td></tr></table></fieldset></td></tr><tr><td height=5></td></tr>
+<tr><td><fieldset><legend>表格布局</legend>
+<table border=0 cellpadding=0 cellspacing=0><tr><td colspan=9 height=5></td></tr>
+	<tr><td width=7></td><td>对齐方式:</td><td width=5></td>
+	<td><select id=oAlign style="width:72px"><option value=''>默认</option><option value='left'>左对齐</option>
+		<option value='center'>居中</option><option value='right'>右对齐</option></select></td><td width=40></td>
+	<td>边框粗细:</td><td width=5></td>
+	<td><input type=text id=oBorder size=10 value=1></td>
+	<td width=7></td></tr><tr><td colspan=9 height=5></td></tr><tr><td width=7></td>
+	<td>单元间距:</td><td width=5></td>
+	<td><input type=text id=oCellspacing size=10 value=2 maxlength=3></td>
+	<td width=40></td><td>单元边距:</td><td width=5></td>
+	<td><input type=text id=oCellpadding size=10 value=3 maxlength=3></td>
+	<td width=7></td></tr>	<tr><td colspan=9 height=5></td></tr></table></fieldset></td></tr><tr><td height=5></td></tr>
+<tr><td><fieldset><legend>表格宽度</legend>
+<table border=0 cellpadding=0 cellspacing=0 width='100%'><tr><td colspan=9 height=5></td></tr>
+	<tr><td width=7></td><td><input id=oCheck type=checkbox> 单行表格线</td>
+	<td align=right width="60%"><input name="oWidth" type="text" value=100 size="5" maxlength="4">
+	<select name=oWidthUnit><option value='px'>像素</option><option value='%' selected>百分比</option></select></td>
+	<td width=7></td></tr>
+	<tr><td colspan=9 height=5></td></tr></table></fieldset></td></tr><tr><td height=5></td></tr>
+<tr><td><fieldset><legend>表格颜色</legend>
+<table border=0 cellpadding=0 cellspacing=0><tr><td colspan=9 height=5></td></tr>
+	<tr><td width=7></td><td>边框颜色:</td><td width=5></td>
+	<td><input type=text id=oBordercolor size=7 value=gray>
+	<img border=0 src="pic/rect.gif" width=18 style="cursor:hand;background-color:gray;" onclick=SetColor(this)></td>
+	<td width=40></td><td>背景颜色:</td><td width=5></td>
+	<td><input type=text id=oBgcolor size=7 value=white>
+	<img border=0 src="pic/rect.gif" width=18 style="cursor:hand;background-color:white;" onclick=SetColor(this)></td>
+	<td width=7></td></tr><tr><td colspan=9 height=5></td></tr></table></fieldset></td></tr><tr><td height=5></td></tr>
+<tr><td align=right><BUTTON id=Ok type=button onclick=ConfirmDlg()>确定</BUTTON>&nbsp;&nbsp;
+<BUTTON onclick=window.close();>取消</BUTTON></td></tr></table>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head><title>图标字体库</title>
+<meta http-equiv="X-UA-Compatible" content="edge" />	
+<META http-equiv='Content-Type' content='text/html; charset=gb2312'>
+<META HTTP-EQUIV='Pragma' CONTENT='max-age=5'>
+<link rel="stylesheet" type="text/css" href="../res/font/iconsfont.css">
+</head>
+<body><h1>图标字体库</h1></body>
+<script language=javascript>
+window.onload = function()
+{
+	var tag ="";
+	for (var y = 32; y < 39; y ++)
+	{
+		tag += getIconFontText(y, "");
+//		document.body.insertAdjacentHTML("beforeEnd", tag);
+	}
+	tag += getIconFontText(224, "font-family:sfont");
+//	document.body.insertAdjacentHTML("beforeEnd", tag);
+	
+	for (var y = 230; y < 236; y ++)
+	{
+		tag += getIconFontText(y, "font-family:iconfont");
+//		document.body.insertAdjacentHTML("beforeEnd", tag);
+	}
+	document.body.insertAdjacentHTML("beforeEnd", tag);
+
+};
+
+function getIconFontText(y, style)
+{
+	var result = "", value = "";
+	for (x = 0; x < 8; x++)
+	{
+		value = "";
+		for (z = 0; z < 32; z++)
+		{
+			value += "<span title=" + (y * 256 + x * 32 + z) + "-" + (y * 256 + x * 32 + z).toString(16) +
+			 " style='width:30px;display:inline-block;" + style + ";font-size:25px;'>&#" + (y * 256 + x * 32 + z) + ";</span>";
+		}
+		result += "<div>" + value + "</div>";
+	}
+	return "<h2>" + y + "(" + y * 256 + " - " + (y * 256 + 255) + ") ~ " + 
+		y.toString(16) + "(" + (y * 256).toString(16) + "-" + (y * 256 + 255).toString(16) + ") ~ " + style + "</h2>" + result;	
+}
+</script></html>

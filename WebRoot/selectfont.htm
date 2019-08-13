@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><META http-equiv='Content-Type' content='text/html; charset=GBK'>
+<meta http-equiv='MSThemeCompatible' content='Yes'>
+<TITLE>选择字体</TITLE>
+<meta http-equiv="Content-Type" content="text/html; charset=GBK">
+<script language=javascript src=psub.js></script>
+
+<SCRIPT LANGUAGE=JavaScript>
+
+function ShowBorder(obj)
+{
+	if (typeof(oFocus) == "object")
+	{
+		oFocus.style.border = "1px solid gray";
+	}
+
+	SampleText.style.color = obj.firstChild.style.background;
+	
+	oFocus = obj;
+	oFocus.oldborder = oFocus.style.border;
+	oFocus.style.border = "1px solid navy";
+	ConfirmDlg();
+	if (event != null)
+		event.cancelBubble = true;
+}
+
+
+function ChangeFont()
+{
+	txtFontName.value = FontName.value;		// 字体名
+	txtFontStyle.value = FontStyle.options[FontStyle.selectedIndex].text;
+	txtFontSize.value = FontSize.value;		// 字体样式
+	document.all.SampleText.style.font = document.all.FontStyle.value + document.all.FontSize.value + document.all.FontName.value;
+	ConfirmDlg();
+}
+
+function ConfirmDlg()
+{
+	returnValue = "font=" + document.all.SampleText.style.font + ";color=" + document.all.SampleText.style.color;
+	parent.SelectFontEx(returnValue);
+//	window.close();
+}
+
+function InitComboValue(obj)
+{
+	document.all.ButtonTD.style.display = "none";
+}
+
+
+function ConfirmColorDlg()
+{
+	// 弹出图像选择窗口并获取返回值
+	var t = window.showModalDialog("com/SeleColor.jsp","", "dialogWidth:350px; dialogHeight:320px");
+	if (t!=null)
+	{
+		document.all.SampleText.style.color = t;
+		SPANStyleGetColor.style.background = t;
+	}
+	ConfirmDlg();
+
+}
+</SCRIPT>
+<style type="text/css">
+<!--
+.TDStyle {
+	border:none;
+	height:20px;	
+}
+.SPANStyle {
+	width:20px;
+	height:10px;
+	font-size:9px;
+	border-style:none;
+}
+-->
+</style>
+</HEAD>
+<BODY bgcolor=menu leftmargin=4 topmargin=4>
+<TABLE>
+<tr><td style="font:normal normal normal 12px 宋体">字体: </td>
+<td style="font:normal normal normal 12px 宋体">字形: </td>
+<td style="font:normal normal normal 12px 宋体">大小: </td></tr>
+<tr><td style="font:normal normal normal 12px 宋体"><input name="txtFontName" type="text" value="宋体" size="19" readonly="true"></td>
+<td style="font:normal normal normal 12px 宋体"><input name="txtFontStyle" type="text" value="常规" size="9" readonly="true"></td>
+<td style="font:normal normal normal 12px 宋体"><input name="txtFontSize" type="text" value="12px" size="6" readonly="true"></td></tr>
+<tr><td><select size="6" id=FontName onchange=ChangeFont()> 
+<option value="宋体" selected>宋体
+<option value="黑体">黑体
+<option value="楷体">楷体
+<option value="仿宋">仿宋
+<option value="微软雅黑">微软雅黑
+<option value="隶书">隶书
+<option value="幼圆">幼圆
+<option value="新宋体">新宋体
+<option value="细明体">细明体
+<option value="Arial">Arial
+<option value="Arial Black">Arial Black
+<option value="Arial Narrow">Arial Narrow
+<option value="Bradley Hand ITC">Bradley Hand ITC
+<option value="Brush Script	MT">Brush Script MT
+<option value="Century Gothic">Century Gothic
+<option value="Comic Sans MS">Comic Sans MS
+<option value="Courier">Courier
+<option value="Courier New">Courier New
+<option value="MS Sans Serif">MS Sans Serif
+<option value="Script">Script
+<option value="System">System
+<option value="Times New Roman">Times New Roman
+<option value="Viner Hand ITC">Viner Hand ITC
+<option value="Verdana">Verdana
+<option value="Wide Latin">Wide Latin
+<option value="Wingdings">Wingdings</option>
+</select></td>
+<td>
+<select size="6" id=FontStyle onchange=ChangeFont()>
+<option value="normal normal normal " selected>常规
+<option value="italic normal normal ">斜体
+<option value="normal normal bold ">粗体
+<option value="italic normal bold ">粗斜体</option>
+</select></td>
+<td>
+<select size="6" id=FontSize onchange=ChangeFont()>
+<option value="8px ">8px
+<option value="9px ">9px
+<option value="10px ">10px
+<option value="11px ">11px
+<option value="12px " selected>12px
+<option value="13px ">13px
+<option value="14px ">14px
+<option value="15px ">15px
+<option value="16px ">16px
+<option value="17px ">17px
+<option value="18px ">18px
+<option value="19px ">19px
+<option value="20px ">20px
+<option value="21px ">21px
+<option value="22px ">22px
+<option value="23px ">23px
+<option value="24px ">24px
+<option value="25px ">25px
+<option value="26px ">26px
+<option value="27px ">27px
+<option value="28px ">28px
+<option value="29px ">29px
+<option value="30px ">30px
+<option value="31px ">31px
+<option value="32px ">32px
+<option value="33px ">33px
+<option value="34px ">34px
+<option value="35px ">35px
+<option value="36px ">36px
+</select></td></tr>
+<tr>
+<td style="font:normal normal normal 12px 宋体">	颜色	</td>
+<td colspan=2 align=right>
+<span id="SPANStyleGetColor" class="SPANStyle" style="background:#FFFFFF;"  onClick="SampleText.style.color = SPANStyleGetColor.style.background;" ></span>
+&nbsp;<BUTTON id=Ok onclick=ConfirmColorDlg()>更多...</BUTTON>	</td>
+</tr>
+<tr><td colspan="3">
+<table width="100%" border="0" id="TableColor">
+<tr>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Black;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Crimson;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Green;;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Olive;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Navy;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Purple;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:DarkCyan;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Gray;"></span></td>
+</tr>
+<tr>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Silver;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Red;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Lime;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Yellow;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Blue;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Fuchsia;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:Cyan;"></span></td>
+<td onClick="ShowBorder(this)" align=center class="TDStyle"><span class="SPANStyle" style="background:White;"></span></td>
+</tr>
+</table></td>
+</tr>
+<tr style=display:none>
+<td style="font:normal normal normal 12px 宋体" colspan="3">示例</td>
+</tr>
+<tr style=display:none>
+<td id=SampleText colspan=3 height=80 bgcolor=white style="font:normal normal normal 12px 宋体;border:1px solid gray">
+中文示例ABC123</td>
+</tr>
+<tr>
+<td id=ButtonTD colspan="3" align="center"><BUTTON id=Ok onclick=ConfirmDlg()>确定</BUTTON>&nbsp;&nbsp;<BUTTON onclick=window.close()>取消</BUTTON></td>
+</tr>
+</TABLE>
+</BODY>   
+</HTML>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE taglib
+PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+"http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+	<tlib-version>1.0</tlib-version>
+	<jsp-version>1.2</jsp-version>
+	<short-name>anotherbuglib</short-name>
+	<tag>
+		<name>IncludeBody</name>
+		<tag-class>com.jaguar.taglib.IncludeBody</tag-class>
+		<body-content>JSP</body-content>
+		<description>body</description>
+		<attribute>
+			<name>counts</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
+	<tag>
+		<name>Lang</name>
+		<tag-class>com.jaguar.taglib.Language</tag-class>
+		<body-content>JSP</body-content>
+		<description>title</description>
+		<attribute>
+			<name>key</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>replace</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>replaceExp</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>basename</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>defaultValue</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
+	<tag>
+		<name>Prop</name>
+		<tag-class>project.taglib.Prop</tag-class>
+		<body-content>JSP</body-content>
+		<description>prop</description>
+		<attribute>
+			<name>key</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
+</taglib>

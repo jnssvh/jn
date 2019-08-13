@@ -1,0 +1,21 @@
+@CHARSET "GB2312";
+
+body
+{
+text-align:center;
+margin:0px;
+padding:0px;
+font-size:14px;
+background-color:white;
+color:#303030;
+}
+div
+{
+margin:0px;
+margin:0 auto;
+padding:0px;
+}
+table
+{
+	border-collapse:collapse;
+}

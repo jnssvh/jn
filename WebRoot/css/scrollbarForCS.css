@@ -1,0 +1,14 @@
+@CHARSET "GB2312";
+html
+{
+	
+ SCROLLBAR-FACE-COLOR: #E0F2FE; /*==滚动条凸出部分的颜色==*/
+ SCROLLBAR-HIGHLIGHT-COLOR: #E0F2FE;/*==滚动条空白部分的颜色==*/
+ SCROLLBAR-SHADOW-COLOR: #ADD6F5; /*==立体滚动条阴影的颜色==*/
+ SCROLLBAR-3DLIGHT-COLOR: #ADD6F5;/*==滚动条亮边的颜色==*/
+ SCROLLBAR-ARROW-COLOR: #A3D8FB;/*==上下按钮上三角箭头的颜色==*/
+ SCROLLBAR-TRACK-COLOR: #F5FBFF;/*==滚动条的背景颜色==*/
+ SCROLLBAR-DARKSHADOW-COLOR: white;/*==滚动条强阴影的颜色==*/
+ SCROLLBAR-BASE-COLOR: #fcfcfc; /*==滚动条的基本颜色==*/
+
+}

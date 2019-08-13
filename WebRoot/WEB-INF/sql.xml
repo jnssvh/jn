@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<sqlset>
+<sql id="getroommember">select EName,CName from ChatRoomUsers where RoomID=[param] and LeaveTime is null</sql>
+<sql id="getsyllabuses">
+	select Syllabuses_id, CPB_Syllabuses.term_id, CPB_Syllabuses.class_id, print_id, Syllabuses_date,
+	Syllabuses_AP, Syllabuses_activity_id, Syllabuses_activity_name, Syllabuses_course_id, 
+	Syllabuses_course_name, Syllabuses_teacher_id, Syllabuses_teacher_name, 
+	Syllabuses_ClassRoom_id, Syllabuses_ClassRoom, bAttendance, BeginTime, EndTime, 
+	Class_Name, Term_Name from CPB_Syllabuses 
+	left join CPB_Class on CPB_Syllabuses.class_id=CPB_Class.class_id 
+	left join CPB_Term on CPB_Syllabuses.term_id=CPB_Term.term_id 
+	where Syllabuses_date&gt;='[param1]' and Syllabuses_date&lt;='[param2]' [param3]
+</sql>
+<sql id="getsyllabuses_lzdx">
+	select Syllabuses_id, CPB_Syllabuses.term_id, CPB_Syllabuses.class_id, print_id, Syllabuses_date,
+	Syllabuses_AP, Syllabuses_activity_id, Syllabuses_activity_name, Syllabuses_subject_id Syllabuses_course_id, 
+	Syllabuses_subject_name Syllabuses_course_name, Syllabuses_teacher_id, Syllabuses_teacher_name, 
+	Syllabuses_ClassRoom_id, Syllabuses_ClassRoom, bAttendance, BeginTime, EndTime, 
+	Class_Name, Term_Name from CPB_Syllabuses 
+	left join CPB_Class on CPB_Syllabuses.class_id=CPB_Class.class_id 
+	left join CPB_Term on CPB_Syllabuses.term_id=CPB_Term.term_id 
+	where Syllabuses_date&gt;='[param1]' and Syllabuses_date&lt;'[param2]' [param3]
+</sql>
+<sql id="getsyllabuses2">
+	select Syllabuses_id, CPB_Syllabuses.term_id, CPB_Syllabuses.class_id, print_id, Syllabuses_date,
+	Syllabuses_AP, Syllabuses_activity_id, Syllabuses_activity_name, Syllabuses_course_id, 
+	Syllabuses_course_name, Syllabuses_teacher_id, Syllabuses_teacher_name, 
+	Syllabuses_ClassRoom_id, Syllabuses_ClassRoom, bAttendance, BeginTime, EndTime, 
+	Class_Name, Term_Name from CPB_Syllabuses 
+	left join CPB_Class on CPB_Syllabuses.class_id=CPB_Class.class_id 
+	left join CPB_Term on CPB_Syllabuses.term_id=CPB_Term.term_id 
+	where Syllabuses_date&gt;='[param1]' and Syllabuses_date&lt;'[param2]' and CPB_Syllabuses.class_id=[param3]
+</sql>
+<sql id="getstudent">select Syllabuses_id, CPB_Syllabuses.term_id, CPB_Syllabuses.class_id, print_id
+	, Syllabuses_date, Syllabuses_AP, Syllabuses_activity_id, Syllabuses_activity_name, Syllabuses_course_id
+	, Syllabuses_course_name, Syllabuses_teacher_id, Syllabuses_teacher_name, Syllabuses_ClassRoom_id
+	, Syllabuses_ClassRoom, bAttendance, BeginTime, EndTime, Class_Name, Term_Name
+	 from (CPB_Syllabuses inner join CPB_Class on CPB_Syllabuses.class_id=CPB_Class.class_id)
+	  inner join CPB_Term on CPB_Syllabuses.term_id=CPB_Term.term_id
+	   where Syllabuses_date BETWEEN '[param1]' AND '[param2]'
+	    AND CPB_Syllabuses.class_id=(SELECT SS_Student.ClassID FROM SS_Student WHERE SS_Student.STDNo='[param3]')
+</sql>
+<sql id="getstudent_lzdx">select Syllabuses_id, CPB_Syllabuses.term_id, CPB_Syllabuses.class_id, print_id
+	, Syllabuses_date, Syllabuses_AP, Syllabuses_activity_id, Syllabuses_activity_name, Syllabuses_course_id
+	, Syllabuses_subject_name Syllabuses_course_name, Syllabuses_teacher_id, Syllabuses_teacher_name, Syllabuses_ClassRoom_id
+	, Syllabuses_ClassRoom, bAttendance, BeginTime, EndTime, Class_Name, Term_Name
+	 from (CPB_Syllabuses inner join CPB_Class on CPB_Syllabuses.class_id=CPB_Class.class_id)
+	  inner join CPB_Term on CPB_Syllabuses.term_id=CPB_Term.term_id
+	   where Syllabuses_date BETWEEN '[param1]' AND '[param2]'
+	    AND CPB_Syllabuses.class_id=(SELECT SS_Student.ClassID FROM SS_Student WHERE SS_Student.STDNo='[param3]')
+</sql>
+<sql id="getclass">select Syllabuses_id, CPB_Syllabuses.term_id, CPB_Syllabuses.class_id, print_id
+	, Syllabuses_date, Syllabuses_AP, Syllabuses_activity_id, Syllabuses_activity_name, Syllabuses_course_id
+	, Syllabuses_course_name, Syllabuses_teacher_id, Syllabuses_teacher_name, Syllabuses_ClassRoom_id
+	, Syllabuses_ClassRoom, bAttendance, BeginTime, EndTime, Class_Name, Term_Name
+	 from (CPB_Syllabuses inner join CPB_Class on CPB_Syllabuses.class_id=CPB_Class.class_id)
+	  inner join CPB_Term on CPB_Syllabuses.term_id=CPB_Term.term_id
+	   where Syllabuses_date BETWEEN '[param1]' AND '[param2]'
+	    AND CPB_Syllabuses.class_id=[param3]
+</sql>
+<sql id="getsyllabuses_free"><![CDATA[
+select Syllabuses_free_id, CPB_Syllabuses_free.term_id, Syllabuses_free_date, Syllabuses_free_ap,
+	Syllabuses_free_course_id, Syllabuses_free_course_name, Syllabuses_free_teacher_id,
+	Syllabuses_free_teacher_name, Syllabuses_free_ClassRoom_id, Syllabuses_free_ClassRoom_name, bAttendance, BeginTime, EndTime, 
+	sum_score, effective_count, Term_Name
+	 from CPB_Syllabuses_free
+	left join CPB_Term on CPB_Syllabuses_free.term_id=CPB_Term.term_id 
+	where 
+	CPB_Syllabuses_free.Syllabuses_free_id IN (SELECT Syllabuses_free_id
+	 FROM CPB_Syllabuses INNER JOIN CPB_Syllabuses_free
+	 ON CPB_Syllabuses.Syllabuses_date=CPB_Syllabuses_free.Syllabuses_free_date
+	 AND CPB_Syllabuses.Syllabuses_ap=CPB_Syllabuses_free.Syllabuses_free_ap
+	 WHERE CPB_Syllabuses.Syllabuses_activity_name LIKE '%选修课%'
+	) AND CPB_Syllabuses_free.Syllabuses_type=0
+	 AND Syllabuses_free_date>='[param1]' and Syllabuses_free_date<'[param2]' [param3]
+]]></sql>
+<sql id="getsyllabuses_free_lzdx">
+select Syllabuses_free_id, CPB_Syllabuses_free.term_id, Syllabuses_free_date, Syllabuses_free_ap,
+	Syllabuses_free_subject_id Syllabuses_free_course_id, Syllabuses_free_subject_name Syllabuses_free_course_name, Syllabuses_free_teacher_id,
+	Syllabuses_free_teacher_name, Syllabuses_free_ClassRoom_id, Syllabuses_free_ClassRoom_name, bAttendance, BeginTime, EndTime, 
+	sum_score, effective_count, Term_Name from CPB_Syllabuses_free
+	left join CPB_Term on CPB_Syllabuses_free.term_id=CPB_Term.term_id 
+	where Syllabuses_free_date&gt;='[param1]' and Syllabuses_free_date&lt;'[param2]' [param3]
+</sql>
+<sql id="getclassroom">
+select ClassRoom_id,ClassRoom_name,CardMathineIP from CPB_ClassRoom
+</sql>
+<sql id="getClassRoomByName">
+select ClassRoom_id,ClassRoom_name,CardMathineIP from CPB_ClassRoom where ClassRoom_name='[param1]'
+</sql>
+</sqlset>

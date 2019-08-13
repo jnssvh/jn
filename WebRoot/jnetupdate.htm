@@ -1,0 +1,59 @@
+<html>
+<head><TITLE>即网通系统升级</TITLE>
+<meta http-equiv="Content-Type" content="text/html; charset=GBK">
+</head>
+<body bgcolor=menu>
+<div style=width:100%;font-size:9pt;>&nbsp;&nbsp;&nbsp;&nbsp;<B>提示：</b>系统升级将让系统升级到最新的版本，
+在系统升级过程中，系统将暂停运行10-120秒，请选择在没有人使用本系统的情况下升级。<BR><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;您可使用默认升级地址进行升级，或输入由产品服务商提供的其它地址来进行升级。
+<br><BR><BR>
+升级服务器地址：<BR>
+<input name=SysURL size=42 value=(默认升级地址)><br><BR>
+<center>
+<input type=button onclick=UpdateSys() value=升级>&nbsp;&nbsp;
+<input type=button value=取消 onclick=external.close()>
+</center>
+
+</div>
+</BODY>
+<script language=javascript>
+function UpdateSys()
+{
+var NetBox = new ActiveXObject("NetBox");
+var url = document.all.SysURL.value
+	if ( url== "" || url == "(默认升级地址)")
+		url = "http://www.dooite.com/JU/JNETServer.exe";
+	try
+	{
+		var f = new ActiveXObject("NetBox.File");
+		f.open(NetBox.ApplicationName);
+		var d2 = f.lastModify;
+		f.Close();
+
+		f.open(url);
+		var d1 = f.lastModify;
+		if (d1 < d2)
+			return alert("目前已经是最高版本了");
+		
+			var f1 = new ActiveXObject("NetBox.File");
+			f1.Create(NetBox.ApplicationPath + "JNETServer.exe");
+			f1.CopyFrom(f);
+			f.Close();
+			f1.Close();
+								
+			var Shell = new ActiveXObject("Shell");
+			Shell.Execute(NetBox.ApplicationPath + "JNETServer.exe", 1);
+			Shell.Halt(0);
+			alert("OK");
+	}
+	catch(e)
+	{
+		alert("升级失败，可能是网络故障或升级地址错误");
+		document.all.SysURL.focus();
+	}
+	
+}
+
+
+</SCRIPT>
+</HTML>

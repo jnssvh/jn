@@ -1,0 +1,24 @@
+
+.cal{border:1px solid #196AB2;width:254px;_width:240px;position:absolute; padding:0 5px; 
+	font-family:Arial;background:#DEF0F9 url(http://digi.tech.qq.com/images/ld/2007/1022/images/pcm2.gif) repeat-x ; 
+}
+.cal a,.cal b{display:block; float:left;zoom: 1;width:28px;height:28px;line-height:28px; padding:2px; 
+	background:#DEF0F9;font-size:12px;text-align:center;color:#1668B1;font-family:Arial; 
+	text-decoration:none; margin:0px 2px; 
+}
+.cal b{background:none ;}
+.cal a:hover{background:#A9DAF3;color:#900;font-weight:bold}
+.cal .btn{cursor:pointer;color:#fff; }
+.cal .dateCap{	width:100px;_width:92px;color:#fff;}
+
+
+.cal2{border:2px solid tan;width:210px;_width:190px;position:absolute;
+font-family:Arial;background:honeydew;left:-500px;overflow:hidden; }
+.cal2 a,.cal2 b{display:block; float:left;zoom: 1;width:20px;height:16px;line-height:16px;padding:2px; 
+	background:honeydew;font-size:12px;text-align:center;color:#0066cc;font-family:Arial; 
+	text-decoration:none;margin:0px 2px; 
+}
+.cal2 b{background:none;}
+.cal2 a:hover{background:darkorange;color:#fff;font-weight:bold}
+.cal2 .btn{cursor:pointer;width:18px;}
+.cal2 .dateCap{	width:80px;color:#006699; }

@@ -1,0 +1,496 @@
+<html><head><TITLE>JCom class Help</TITLE>
+<meta http-equiv="Content-Type" content="text/html; charset=GBK">
+<link rel='stylesheet' type='text/css' href='../forum.css'>
+<style type="text/css">
+BODY{FONT-FAMILY: 微软雅黑; FONT-SIZE: 16px;word-break:break-all;line-height:16px;cursor:default;padding:0px;overflow:hidden;margin:0px;}
+textarea{width:100%;height:300px;overflow-y:visible;background-color:#f0f0f0;border:none;}
+a:hover { text-decoration: none;}
+#HelpDiv {padding:0px;overflow-x:hidden;overflow-y:auto;border:none;}
+.info{padding-left:40px;}
+.pme{color:blue;}
+</style>
+</head>
+<body>
+<div id=TreeDiv style="width:300px;height:100%;border:1px solid gray;overflow:auto;float:left"></div>
+<div id=MDIDiv style="height:100%;overflow:hidden;">
+<div id=HelpDiv>Help</div>
+<pre id=CodeText style=border:none;display:none;>
+Code
+here
+</pre>
+</div>
+</body>
+<script language=javascript src=jquery.js></script>
+<script language=javascript src=jcom.js></script>
+<script language=javascript src=page.js></script>
+<script language=javascript>
+var tree, split, mdiwin, objname, oXML, editflag = 0, editobj;
+var __JCOM__HelpFile = true;
+var funlist = [];
+$(document).ready(function()
+{
+	split = new $.jcom.Split($("#TreeDiv")[0], $("#MDIDiv")[0]);
+	tree = new $.jcom.TreeView($("#TreeDiv")[0], [], {vpadding:3});
+//	tree.setexpic(["/pic/folderopen.gif", "/pic/folderclose.gif"]);
+	treedata = [{item:"jcom-通用函数及类库参考", kind:1, child:[{item:"通用函数", kind:2},{item:"界面功能类",kind:3,child:[]}]}];
+	var clslist = treedata[0].child[1].child;
+	for (var key in $.jcom)
+	{
+		var help = getObjHelpText($.jcom[key]);
+		var ss = help[0].text.split(":");
+		switch (ss[0])
+		{
+		case "函数":
+			funlist[funlist.length] = {item:key, fun:help[0].code, info:ss[1],kind:4};
+			break;
+		case "类":
+			clslist[clslist.length] = {item:key + "-" + ss[1],kind:5};
+			break;
+		case "类集":
+			var x = treedata[0].child.length;
+			treedata[0].child[x] = {item:key + "-" + ss[1], child:[],kind:6};
+			EnumObjs(treedata[0].child[x].child, $.jcom[key]);
+			break;
+		default:
+//			alert(ss[0]);
+			break;
+		}
+	}
+
+	tree.setdata(treedata);
+	tree.click = HelpItem;
+	mdiwin = new $.jcom.MDIWindows($("#MDIDiv")[0], {});
+	mdiwin.Create($("#HelpDiv")[0], "参考手册", 1, {dblclick:0});
+	mdiwin.Create($("#CodeText")[0], "源代码", 1, {dblclick:0});
+	mdiwin.ActivePage("参考手册");
+});
+
+function getObjHelpText(obj)
+{
+var help = [];
+	switch (typeof obj)
+	{
+	case "function":
+		var text = "" + obj;
+		var ss = text.split("\n");
+		for (var x = 0; x < ss.length; x++)
+		{
+			var sss = ss[x].split("//");
+			if (sss.length > 1)
+				help[help.length] = {code: sss[0], text: sss[1]};
+			else
+			{
+				break;
+			}
+		}
+		if (help.length == 0)
+			help[0] = {code: ss[0], text:""};
+		break;
+	case "object":
+		help[0] = {code:"", text:obj.__helpname};
+		break;
+	default:
+		help[0] = {code:"", text: "属性:" + obj};
+	}
+	return help;
+}
+
+function EnumObjs(list, obj)
+{
+	for (var key in obj)
+	{
+		if (key.substr(0, 2) == "__")
+			continue;
+		var help = getObjHelpText(obj[key])
+		list[list.length] = {item:key + "-" + help[0].text, kind:7};
+	}
+}
+
+function HelpItem(o)
+{
+	if (o == undefined)
+		return;
+	tree.select(o);
+	var item = tree.getTreeItem();
+	switch (item.kind)
+	{
+	case 1:		//根 $.jcom
+		break;
+	case 2:		//通用函数
+		HelpFunc();
+		break;
+	case 3:		//单个类
+		break;
+	case 4:		//通用函数-函数
+		break;
+	case 5:		//单个类-类
+		HelpObject(item.item);
+		break;
+	case 6:		//类集
+		break;
+	case 7:		//类集-类
+		var node = $(o).attr("node");
+		var parentNode = node.substr(0, node.lastIndexOf(","));
+		var parentItem = tree.getTreeItem(parentNode);
+		var ss = parentItem.item.split("-");
+		HelpObject(ss[0] + "." + item.item);
+		break;
+	}
+	
+}
+
+function HelpFunc()
+{
+	var tag = "<p style=\"font:bold 16px Verdana;\">&nbsp;通用函数</p><hr size=1><p><span id=info>共" + funlist.length + 
+		"个</span></p><br><br><b>函数列表</b><p class=info><table id=listTable class=grid cellspacing=0 cellpadding=0 style='table-layout:fixed;'>" +
+		"<tr><td width=150>名称</td><td width=200>参数</td><td width=550>描述</td></tr>";
+	var tag1 = "", tag2 = "<br><br><b>详细说明</b><br><br>";
+		
+	for (var x = 0; x < funlist.length; x++)
+	{
+		tag += "<tr><td>$.jcom." + funlist[x].item + "</td><td>" + funlist[x].fun.substr(funlist[x].fun.indexOf("("))+ "</td><td>" + funlist[x].info + "</td></tr>";
+		tag1 += "$.jcom." + funlist[x].item + " = " + $.jcom[funlist[x].item] + ";\n\n";
+		tag2 += "<br><a name=" + funlist[x].item + "><p class=pme>$.jcom." + funlist[x].item + "&nbsp;&nbsp;" + funlist[x].info + "</p>" +
+			"<p class=info>●&nbsp;语法</p><p class=info>$.jcom." + funlist[x].item + funlist[x].fun.substr(funlist[x].fun.indexOf("(")) + ";</p>";
+	
+		var objhelp = getObjHelpText($.jcom[funlist[x].item]);
+		tag2 += MethodDetail(objhelp);
+	}
+	
+	tag += "</table>" + tag2;
+	$("#HelpDiv").html(tag);
+	$("#CodeText").text(tag1);
+
+}
+
+function MethodDetail(ahelp)
+{
+var tag = "", status = 0;
+	for (var x = 2; x < ahelp.length; x++)
+	{
+		var index = ahelp[x].text.indexOf(":");
+		if (index > 0)
+		{
+			switch (ahelp[x].text.substr(0, index))
+			{
+			case "返回值":
+			case "说明":
+			case "实例":
+				if (status == 1)
+					tag += "</table>";
+				else if (status == 2)
+					tag += "</table></td></tr></table>";
+				tag += "</p><p class=info>●&nbsp;" +ahelp[x].text.substr(0, index) + "</p><p class=info>" + ahelp[x].text.substr(index +1);
+				status = 3;
+				break;
+			default:
+				if (status == 0)
+				{
+					status = 1;
+					tag += "<p class=info>●&nbsp;参数</p><p class=info><table>";
+				}
+				var ss = ahelp[x].text.split("--");
+				if (ss.length > 1)
+				{
+					if (status == 1)
+						tag += "<tr><td></td><td><table><tr><td>名称</td><td>默认值</td><td>说明</td><td>备注</td></tr>";
+					status = 2;
+					var y = ss[0].indexOf(":");
+					tag += "<tr><td>" + ss[0].substr(0, index) + "</td><td>" + ss[0].substr(index + 1) + "</td><td>" + ss[1] + "</td><td>" +ss[2] + "</td></tr>";
+					break;
+				}
+				if (status == 2)
+				{
+					tag += "</table></td></tr>";
+					status = 1;
+				}
+				if (status == 1)
+					tag += "<tr><td>" + ahelp[x].text.substr(0, index) + "</td><td>" + ahelp[x].text.substr(index +1) + "</td></tr>";
+				else
+					tag += ahelp[x].text;		
+				break;
+			}
+		}
+		else
+		{
+			if (status == 1)
+				tag += "</table>";
+			else if (status == 2)
+				tag += "</table></td></tr></table>";
+			status = 3;
+			tag += ahelp[x].text;
+		}
+	}
+	if (status == 1)
+		tag += "</table>";
+	else if (status == 2)
+		tag += "</table></td></tr></table>";
+	return tag + "</p>";
+}
+
+function HelpObject(itemName)
+{
+	var ss = itemName.split("-");
+	var objname = ss[0];
+	var o = eval("$.jcom." + objname);
+	var objhelp = getObjHelpText(o);
+	if (objhelp.length < 2)
+		objhelp[1] = {code:"", text:""};
+	var base;
+	index = objhelp[1].text.indexOf("基类：");
+	if (index > 0)
+	{
+		base = $.trim(objhelp[1].text.substr(index + 3));
+	}
+	var tag = "<p style=\"font:bold 16px Verdana;\">&nbsp;" + itemName +
+		"</p><hr size=1><p><span id=info>" + objhelp[1].text + 
+		"</span></p><br><br><b>类成员</b><p class=info><table id=listTable class=grid cellspacing=0 cellpadding=0 style='table-layout:fixed;'>" +
+		"<tr><td width=50>类型</td><td width=150>名称</td><td width=200>参数</td><td width=550>描述</td></tr>";
+
+	tag += "<tr><td>构造</td><td style=color:blue><a href=#" + objname + ">$.jcom." + objname + "</a></td><td>" + 
+		objhelp[0].code.substr(objhelp[0].code.indexOf("(")) + "</td><td>创建类实例</td></tr><tr><td>&nbsp;</td></tr>";
+		
+	var tag1 = "<br><br><b>详细说明</b><br><br><a name=" + objname + "><p class=pme>" + objname + "&nbsp;&nbsp;创建类实例(构造)</p>"
+	tag1 += "<p class=info>●&nbsp;语法</p><p class=info>var obj = new $.jcom." + GetSyntax(objname, objhelp[0].code) + ";</p>";
+
+	objhelp[objhelp.length] = {text:"返回值:创建的类实例"};
+	tag1 += MethodDetail(objhelp);
+	var c = "new $.jcom." + objname + "()";
+	if (objname == "jcom")
+		c = "$.jcom";
+	try{
+		var obj = eval(c);
+	} catch (e){
+		alert("不能建立类对象: " + e.message);
+		return;
+	}
+	for (var key in obj)
+	{
+		if (key.substr(0, 2) == "__")
+			continue;
+		var help = getObjHelpText(obj[key]);
+		var text = help[0].text;
+		if (text == undefined)
+			text = "??:??";
+		if (text.substr(0, 2) == "属性")
+		{
+			if ((obj["__" + key] == undefined) && (base != undefined))
+			{
+				var oo = eval(base);
+				if (typeof oo == "function")
+					obj["__" + key] = oo.prototype["__" + key] + ",继承自基类";
+			}
+			tag += "<tr><td>属性</td><td style=color:blue>" + key + "</td><td>" + obj[key] + "</td><td>" + obj["__" + key] + "</td></tr>";
+			continue;
+		}
+		var ss = text.split(":");
+		tag += "<tr><td>" + ss[0] + "</td><td style=color:blue><a href=#" + key + ">" + key + "</a></td><td>" +
+			help[0].code.substr(help[0].code.indexOf("(")) + "</td><td>" + ss[1] + "</td></tr>";
+		tag1 += "<br><a name=" + key + "><p class=pme>" + key + "&nbsp;&nbsp;" + ss[1] + "(" + ss[0] + ")</p>";
+		tag1 += "<p class=info>●&nbsp;语法</p><p class=info>obj." + GetSyntax(key, help[0].code) + ";</p>" +
+			MethodDetail(help);
+	}
+	tag +="</table></p><br>" + tag1
+	if (typeof Example[objname] == "function")
+	{
+		tag += "<br><br><br><b>示例</b>";
+		var text = "" + Example[objname];
+		text = "<html>\n<head>\n<TITLE>JCOM Example</TITLE>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=GBK\">\n" +
+			"<link rel='stylesheet' type='text/css' href='../forum_java.css'>\n<script language=javascript src=jquery.js></" + "script>\n" +
+			"<script language=javascript src=jcom.js></" + "script>\n" + text.substring(text.indexOf("/*") + 2, text.indexOf("*/")) +
+			"\n</" + "script>\n</html>";
+		tag += "<textarea>" + text + "</textarea><input type=button value=运行 onclick=RunScript(this)><span>(提示：您可以修改部分内容再运行)</span><br><br><br>";
+	}
+
+//	$("#HelpDiv").html(tag);	//IE9 不正常，会丢失开始的内容。原因不明，先弃之用下面的代替。
+	$("#HelpDiv")[0].innerHTML = tag;
+	
+	try
+	{
+		$("#CodeText").text("$.jcom." + objname + " = " + eval("$.jcom." + objname) + ";\n");
+	}
+	catch (e)
+	{
+		$("#CodeText").text("源代码未载入。- " + e);
+	}
+	
+}
+
+function GetSyntax(objname, text)
+{
+	return objname + text.substr(text.indexOf("("));
+}
+
+
+function RunScript(obj)
+{
+	var text = obj.previousSibling.value;
+	var win = window.open("");
+	win.document.charset = "GBK";
+	win.document.write(text);
+	win.document.close();
+}
+
+$.jcom.DynaEditor.__helpname = "类集:动态编辑框类集合";
+$.jcom.DynaEditor.Base.prototype.__oHost = "产生动态编辑框的原对象";
+$.jcom.DynaEditor.Base.prototype.__oEdit = "动态生成的编辑框的DOM对象";
+$.jcom.DynaEditor.Base.prototype.__oBox = "弹出的下拉框，为PopupBox对象";
+$.jcom.DynaEditor.Base.prototype.__oButton = "动态生成的下拉按钮，可重定义为其它用途";
+$.jcom.DynaEditor.Base.prototype.__value = "编辑对象的值"
+$.jcom.DynaEditor.Base.prototype.__bLastValue = "是否记住上次编辑器的值";
+$.jcom.DynaEditor.Base.prototype.__type = "本对象的类型";
+
+var Example = {};
+Example.MDIWindows = function ()
+{
+/*
+<body>
+<p>
+一个简单的MDIWindows实例
+</p>
+<div id=MDIDiv style=width:400px;height:300px></div>
+</body>
+<script language=javascript>
+var mdi;
+window.onload = function()
+{
+	mdi = new $.jcom.MDIWindows($("#MDIDiv")[0]);
+	mdi.Create("http://www.baidu.com");
+	mdi.Create("http://www.google.com", "Google");
+	mdi.Create("http://www.bing.com", "Bing");
+};
+*/
+}
+
+Example.Split = function ()
+{
+/*
+<body>
+<p>
+一个简单的Split实例
+</p>
+<div id=LeftDiv style=width:200px;height:300px;float:left;background-color:red></div>
+<div id=RightDiv style=width:200px;height:300px;background-color:blue></div>
+</body>
+<script language=javascript>
+var split;
+window.onload = function()
+{
+	split = new $.jcom.Split($("#LeftDiv")[0], $("#RightDiv")[0]);
+};
+
+*/
+}
+
+
+Example.PopupBox = function ()
+{
+/*
+<body>
+<p>
+一个简单的PopupBox实例
+<input type=button value=show onclick=show(this)>
+<input type=button value=hide onclick=hide(this)>
+</p>
+</body>
+<script language=javascript>
+var box;
+window.onload = function()
+{
+	box = new $.jcom.PopupBox("<div style='border:1px solid red;width:100px;height:100px'>1234</div>");
+	box.show(300, 300);
+};
+
+function show()
+{
+	box.show(300, 300);
+}
+
+function hide()
+{
+	box.hide();
+}
+*/
+}
+
+Example.PopupWin = function ()
+{
+/*
+<body scroll=no style="margin:0px;background-color:gray;">
+<p>
+PopupWin实例
+<input type=button value=open onclick=run()>
+</p>
+</body>
+<script language=javascript>
+function run()
+{
+	var win = new $.jcom.PopupWin("CommonMenu.htm");
+}
+window.onload = run;
+
+*/
+}
+
+Example.CommonMenu = function ()
+{
+/*
+<body>
+<p>
+CommonMenu实例,为了演示子菜单不限层数，将子节点指向了父节点，形成一个实际应用中并不存在的不能结束的子菜单。
+<input type=button value=show onclick=show(this)>
+<input type=button value=hide onclick=hide(this)>
+</p>
+</body>
+<script language=javascript>
+var menu;
+window.onload = function()
+{
+	var def = [{item:"菜单项", img:"/pic/admin.gif", action:"alert()"},{},{item:"子菜单",child:[{item:"child1"},{item:"child2"}]}];
+	def[2].child[1].child = def;//字节点指向父节点，导致递归无穷。实际应用不存在。
+	menu = new $.jcom.CommonMenu(def);
+};
+
+function show()
+{
+	menu.show(0, 0);
+}
+
+function hide()
+{
+	menu.hide();
+}
+
+*/
+}
+
+Example.CommonMenubar = function ()
+{
+/*
+<body>
+<p>
+CommonMenubar 菜单条的实例。
+<div id=menubar style=width:100%></div>
+</p>
+
+</body>
+<script language=javascript>
+var bar;
+window.onload = function()
+{
+	var def = [{item:"文件", child:[{item:"新建", action:run},{item:"打开", action:run},{item:"保存", action:run},{item:"关闭", action:run}]},
+		{item:"编辑", child:[{item:"剪切", action:run},{item:"复制", action:run},{item:"粘贴", action:run},{item:"删除", action:run}]},
+		{item:"帮助", action:run,child:[{item:"主题", action:run},{item:"关于", action:run}]}];
+	bar = new $.jcom.CommonMenubar(def, $("#menubar")[0]);
+};
+
+function run(obj, menu)
+{
+	alert(menu.item);
+}
+
+*/
+}
+
+</script>
+</html>

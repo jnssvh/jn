@@ -1,0 +1,110 @@
+<html>
+<head>
+<title>文件编辑</title>
+<meta http-equiv="Content-Type" content="text/html;charset=gb2312">
+<script type="text/javascript" src="dso.js"></script>
+<script type="text/javascript">
+/*用法说明：
+  1，创建 word对象
+  2，设置文件上传url
+  3，在页面加载时，打开word文档，根据是否传人docUrl参数，决定是本地新建，还是从服务器端获取
+  4，在页面关闭时，执行上传操作。
+*/
+
+function openNet() {
+	word.openDoc(gFileName,gUrl);
+}
+
+
+var localName = "";
+
+function disabledTrack() {//允许或禁止显示修订工具栏和工具菜单（保护修订）
+	//document.getElementById('oframe').EnableFileCommand(parseInt(t1.value)) = false;
+	var o = document.getElementById('oframe');
+	var b = !o.ActiveDocument.CommandBars("Reviewing").Enabled;
+	o.ActiveDocument.CommandBars("Reviewing").Enabled = b;
+	o.ActiveDocument.CommandBars("Track Changes").Enabled = b;
+	o.IsShowToolMenu = b;	//关闭或打开工具菜单
+}
+
+var gFileName = "";
+var gUrl = "";
+var gActionPath = "";
+var word = null;
+
+/**
+{url, fileName}
+*/
+function load(fileName, url, savePath, projectRoot, rename, actionPath){
+	
+	var domain = "";
+	domain = location.toString().replace(/^(http:\/\/[^\/]+).*/i, "$1");
+
+	if (url != undefined) {
+		if (!/^http:/i.test(url)) {
+			if (/^\//.test(url)) {
+				url = domain + url;
+			} else {
+				alert("url必须使用绝对路径。");
+				return;
+			}
+		}
+	}
+	if (actionPath == undefined) {
+		actionPath = location.toString();
+		actionPath = actionPath.replace(/dso_form\.htm/, "upload.jsp");
+	}
+    //方法：openDoc(docName, docUrl)
+    // docName:必填，本地保存的文件名, 也为上传到服务器上时的文件名
+    // docUrl: 填时，为从服务器端获取doc文档的路径, 不填时，表示本地新建doc文档
+    //try {
+		word = new WordOption();
+		word.setUploadUrl(actionPath);
+
+		word.serverPath = savePath;
+		
+		if (rename != undefined) {
+			word.rename = rename;
+		}
+		
+		if (url != "") {
+			word.openDoc(fileName, url);
+		} else if (fileName != "") {
+			word.openDoc(fileName);
+		} else {
+			word.openDoc("local.doc");
+		}
+		document.getElementById("divmenu").style.display = "inline";
+	//} catch (e) {
+    //	document.body.innerHTML = "加载Word控件失败，请检查本站点是否在安全站点中。";
+    //}
+    //document.getElementById('oframe').InSertFile("http://10.141.176.200:8080/eut/pic/005.gif",8);
+    //var wordObj = document.getElementById('oframe');
+	gFileName = fileName;
+	gUrl = url;
+	gActionPath = actionPath;
+	
+}
+function unload (){
+    word.saveDoc();
+    //word.close();
+}
+//,'http://10.141.176.200:8080/eut/studentsystem/kaoqin.xls'
+</script>
+</head>
+
+<body onload="load('kaoqin.xls',undefined,'tmp');" onunload="//unload();" topmargin="0" leftmargin="0">
+<div id="divmenu" style="position:absolute;top:3;left:420px;z-index:10;display:none;">
+<iframe style="width:440px;height:20px" src="dso_menu.htm" frameborder="0"></iframe>
+</div>
+<div id="divdso" style="position:absolute;top:0;z-index:0;border:0 solid red;height:100%;display:inline;">
+<object classid="clsid:00460182-9E5E-11d5-B7C8-B8269041DD57" codebase ="dsoframer.ocx" id="oframe" width="100%" height="100%">
+         <param name="BorderStyle" value="1">
+         <param name="Titlebar" value="0">
+         <param name="TitlebarColor" value="255">
+         <param name="TitlebarTextColor" value="0">  
+       </object>
+</div>
+<iframe id="ifr1" name="ifr1" src="" style="display:none;width:100%;"></iframe>
+	</body>	
+</html>

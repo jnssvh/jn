@@ -1,0 +1,404 @@
+/*==表格显示单线==*/
+
+body div
+{
+	margin:0px;padding:0px;
+}
+table
+{
+	border-collapse:collapse;
+}
+
+.td1{border:1 solid #dddddd;font-size:10pt;padding:3;border-top:none;border-left:none}
+.table1{border:1 solid #dddddd;border-right:none;border-bottom:none}
+
+A:visited{TEXT-DECORATION: none}
+A:active{TEXT-DECORATION: none}
+A:hover{TEXT-DECORATION: underline}
+A:link{text-decoration: none;}
+BODY{FONT-FAMILY: 宋体; FONT-SIZE: 14px;word-break:break-all;line-height:24px;}
+TD{FONT-FAMILY: 宋体; FONT-SIZE: 9pt}
+DIV{FONT-FAMILY: 宋体; FONT-SIZE: 9pt}
+FORM{FONT-FAMILY: 宋体; FONT-SIZE: 9pt}
+OPTION{FONT-FAMILY: 宋体; FONT-SIZE: 9pt}
+P{FONT-FAMILY: 宋体; FONT-SIZE: 14px; margin:4px; line-height:24px;}
+TD{FONT-FAMILY: 宋体; FONT-SIZE: 9pt}
+BR{FONT-FAMILY: 宋体; FONT-SIZE: 9pt}
+INPUT{PADDING-RIGHT: 1px; PADDING-LEFT: 1px; FONT-SIZE: 9pt; PADDING-BOTTOM: 1px; PADDING-TOP: 1px;}
+textarea {border-width: 1; border-color: #000000; background-color: #efefef; font-family: 宋体; font-size: 9pt; font-style: bold;}
+select {border-width: 1; border-color: #000000; background-color: #efefef; font-family: 宋体; font-size: 9pt; font-style: bold;}
+FONT{line-height:150%;}
+.t{LINE-HEIGHT: 1.4}
+.TableHead{position: relative; top: expression(this.offsetParent.scrollTop);}
+.page {
+
+	width:				70px;
+	height:				18px;
+	background-image:	url( "pic/tab.png" );
+	
+	position:		relative;
+	top:			0;
+	display:		inline;
+	float:			left;
+	overflow:		hidden;
+	
+	cursor:			Default;
+
+	margin:			1px -1px 1px 2px;
+	padding:		0px 0px 0px 0px;
+	border:			0;
+
+	z-index:		1;
+	font-size:		9pt;
+	white-space:		nowrap;
+	text-align:		center;
+	text-overflow:		ellipsis;
+}
+
+.page.selected {
+	width:			74px !important;
+	height:			20px !important;
+	background-image:	url( "pic/tab2.png" ) !important;
+
+	border-bottom-width:	0;
+	z-index:		3;
+	padding:		0px 0 0px 0;
+	margin:			1px -3px -3px 0px;
+	top:			-2px;
+	text-align:	center;
+}
+
+.page.hover {
+	height:				16px;
+	background-image:	url( "pic/tab1.png" );
+}
+
+.pagediv {
+	clear:			both;
+	border-top:		1px solid gray;
+	z-index:		2;
+	position:		relative;
+	top:			-2px;
+	overflow:		hidden;
+}
+
+
+.xjpage {
+
+	width:				100px;
+	height:				20px;
+	background-color:	#a8a9ad;
+	
+	overflow:			hidden;
+	
+	cursor:				Default;
+
+	padding:			2px 2px 0px 0px;
+	border-right:		1px solid #a0a0a0;
+
+	z-index:			1;
+	font:				normal normal normal 9pt 黑体;
+	white-space:		nowrap;
+	text-align:			center;
+	text-overflow:		ellipsis;
+}
+
+.xjpage.sel {
+	width:					100px;
+	height:					20px;
+	background-color:		#f2f2f4;
+	font:					normal normal normal 9pt 黑体;
+	
+	border-right:			0;
+	border-bottom-width:	0;
+	padding:				2px 2px 0px 0px;
+	text-align:				center;
+}
+
+.gridcontainer
+{
+	width:		100%;
+	overflow-x:	auto;
+	overflow-y:	visible;
+}
+
+.gridbodycontainer
+{
+	width:		100%;
+	height:		300px;
+	overflow-x:	hidden;
+	overflow-y:	auto;
+}
+
+.gridcontainer td div, .gridcontainer th div
+{
+	width:		100px;
+	overflow:	hidden;
+	cursor:		default;
+}
+
+.gridhead
+{
+	border-left:	1px solid gray;
+	border-top:	1px solid gray;
+	border-bottom:	1px solid gray;
+}
+
+.gridhead td
+{
+	border-right:	1px solid #DDDDDD;
+	padding-right:	6px;
+}
+
+/*对应表格风格的表单开始*/
+.jformtable1
+{
+	border-top:			1px solid gray;
+	border-left:		1px solid gray;
+	border-right:		1px solid gray;
+	background-color:	#e8f3ff;
+	width:				100%;
+}
+
+.jformtitle1
+{
+	background-color:	#e8f3ff;
+	background-image: 	url('images/topotool.jpg');
+	height:				22px;
+}
+
+.jformgroup1
+{
+	background-color:	#e8f3ff;
+	background-image: 	url('images/topotool.jpg');
+	height:				22px;
+}
+
+
+.jformcon1
+{
+	background-color:	#e8f3ff;
+	text-align:			right;
+	padding-left:		40px;
+}
+
+.jformval1
+{
+	background-color:	#e8f3ff;
+	padding-right:	20px;
+	padding-left:	20px;
+}
+
+.jformtable1 input.text
+{
+	width:			80%;
+	height:			100%;
+	border:			1px solid gray;
+}
+
+.jformtable1 input.textreadonly
+{
+	width:			80%;
+	border:			1px solid gray;
+}
+
+.jformhint1
+{
+	background-color:	#FFFFFF;
+}
+
+
+.jformtail1
+{
+	background-color:	#e8f3ff;
+	width:				100%;
+	padding-top:		5px;
+	height:				30px;
+	border-bottom:		1px solid gray;
+	border-left:		1px solid gray;
+	border-right:		1px solid gray;
+}
+
+/*对应文档风格的表单开始*/
+.jformtable2
+{
+	border-top:			1px solid white;
+	background-color:	white;
+}
+
+.jformtitle2
+{
+	background-color:	#DDDDDD;
+}
+
+.jformgroup2
+{
+	background-color:	#EEEEEE;
+}
+
+.jformcon2
+{
+	background-color:	white;
+	text-align:			right;
+}
+
+.jformval2
+{
+	background-color:	white;
+}
+
+.jformtable2 input.text
+{
+ 	border-left:		none;
+	border-top:			none;
+	border-right:		none;
+	border-bottom:		1px solid gray;
+}
+
+.jformhint2
+{
+	background-color:	white;
+}
+
+.jformtail2
+{
+	background-color:	white;
+	width:				100%;
+	padding-top:		5px;
+	height:				30px;
+	border-right:		1px solid gray;
+	border-left:		1px solid gray;
+	border-bottom:		1px solid gray;
+}
+
+.tableseekdoc
+{
+	width:			100%;
+	overflow:		auto;	
+}
+
+.MenuBarTable1
+{
+/*	background:		lightsteelblue url(pic/menuback.jpg) repeat-x left top;*/
+/*	border:			1px solid #365279;*/
+	background:		#f2f2f4;
+}
+
+#PageFootTable
+{
+	margin-top:		1px;
+	border-top:		1px solid #cccccc;
+	background-color:	#eeeeee;
+}
+
+#SeekTable
+{
+	border-right:		1px solid #cccccc;
+	border-bottom:		1px solid #cccccc;
+}
+
+#SeekTable TR
+{
+	border-top:		1px solid gray;
+}
+
+#SeekTable TR TD
+{
+	border-left:		1px solid #cccccc;
+	border-bottom:		0px solid #cccccc;
+}
+
+#SeekTitleTR
+{
+	cursor:			hand;
+	color:			black;
+	position:		relative;
+	top:			expression(this.offsetParent.scrollTop);
+	left:			0px;
+	text-align:		center;
+	background-color:	#999999;
+}
+
+#SeekTitleTR TD
+{
+	border-top:		1px solid #cccccc;
+	background-color:	#CCF5FF;
+}
+
+#LeftViewDiv
+{
+	width:				200px;
+	height:				100%;
+	float:				left;
+	clear:				left;
+	margin:				0px;
+}
+
+#RightViewDiv
+{
+	float:				right;
+	height:				100%;
+	overflow:			hidden;
+	border-top:			1px solid gray;
+	border-bottom:		1px solid gray;
+	border-right:		1px solid gray;
+}
+.SelectObj
+{
+	height:				20px;
+	background-color:	navy;
+	color:				white;
+}
+
+.SelectObj TD
+{
+	background-color:	navy;
+	color:				white;
+}
+
+
+.RMenuItem1
+{
+	background:			#e8edf0;
+	color:				black;
+}
+
+.RMenuItem2
+{
+	background:			transparent;
+	color:				black;
+}
+
+.RMenuSelItem1
+{
+	background-color:			#79d0e0;
+	background-image:			url("com/pic/menusel1.png");
+	background-position:		top left;
+	background-repeat:			repeat-x;
+	color:						white;
+}
+
+.RMenuSelItem2
+{
+	background-color:			#79d0e0;
+	background-image:			url("com/pic/menusel2.png");
+	background-position:		top left;
+	background-repeat:			repeat-x;
+	color:						white;
+}
+
+.RMenuSelItem3
+{
+	background-color:			#79d0e0;
+	background-image:			url("com/pic/menusel3.png");
+	background-position:		top left;
+	background-repeat:			repeat-x;
+	color:						white;
+}
+
+.table_list{border-right:none;border-bottom:none;border-color:#CCCC99;}
+.table_list th{border-top:none;border-left:none;border-color:#CCCC99;}
+.table_list td{border-top:none;border-left:none;border-color:#CCCC99;}
+.table_list_black{border-right:none;border-bottom:none;border-color:#000000;}
+.table_list_black th{border-top:none;border-left:none;border-color:#000000;}
+.table_list_black td{border-top:none;border-left:none;border-color:#000000;}

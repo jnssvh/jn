@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="gb2312"?>
+<applications>
+<!-- 基本配置 -->
+	<application type="debug level">
+		<level>info</level>
+		<description>调试信息显示级别：debug,info,error</description>
+	</application>
+	<application type="project root path">
+		<root>/</root>
+		<open_office>d:/Program Files (x86)/OpenOffice.org 3</open_office>
+		<pdf_out_path>tmp</pdf_out_path>
+		<pdf2swf_exe_path>"D:\Program Files (x86)\SWFTools\pdf2swf"</pdf2swf_exe_path>
+		<description>root=项目根目录位置,open_office=open office路径,pdf_out_path=pdf输出路径</description>
+	</application>
+	<application type="upload file">
+		<root>e:\upload</root>
+		<plus>/projectmanager/project_plus.jsp</plus>
+		<description>上传文件根目录位置，位于web目录以外</description>
+	</application>
+	<application type="ChatServer">
+		<port>2300</port>
+		<description>socket服务器端口</description>
+	</application>
+	<application type="service_start_time">
+		<service>
+			<run_time>2:00-2:30</run_time>
+		</service>
+		<description>服务启动时间</description>
+	</application>
+	
+	
+</applications>

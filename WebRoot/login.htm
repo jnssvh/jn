@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<TITLE>登录</TITLE>
+<meta http-equiv="Content-Type" content="text/html; charset=GBK">
+<style type="text/css">
+html,
+body
+{
+  height: 100%;
+  padding:0;
+  margin:0;
+}
+
+body
+{
+  min-height: 200px;
+  text-align: center;
+  min-width: 402px
+}
+.FirstDIV
+{
+  margin-top: -100px; /* SecondDIV高度的一半  */
+  float: left;
+  width: 100%;
+  height: 50%;
+}
+
+.SecondDIV
+{
+  clear: both;
+  border: silver 1px solid;
+  background: #ffffff;
+  margin-left: auto;
+  width: 333px;
+  margin-right: auto;
+  height: 200px;
+  text-align: left
+}
+</style>
+</head>
+<body topmargin=0 leftmargin=0 UNSELECTABLE=on bgcolor=#CACACA>
+<div class="FirstDIV" ></div>
+<div class="SecondDIV">
+<img src=pic/login.jpg>
+<form action="chklogin.jsp" method="post" id=formLogin  onkeypress=PressKey() style=font-size:9pt;display:inline;>
+<input type=hidden name=RetryTime>
+<input type=hidden name=ClientInfo>
+<input type=hidden name=JustUserID>
+<input type=hidden name=clientType value="web">
+<input type=hidden name=LoginPage value='login.htm'>
+<span style=width:50px;padding-left:20px;>账户</span>
+<INPUT name=UserName style=padding:0px;width:120px;height:18px; type=text tabindex=1>
+<input name=AutoLogin type=checkbox onclick=SetAutoLogin(this)>自动登录&nbsp;&nbsp;
+<span style=color:#5555ff;cursor:hand; onclick=Setup();></span>&nbsp;
+<span id=RegisterSpan style=color:#5555ff;cursor:hand;display:none; onclick=Register();>注册</span><BR>
+<span style=width:50px;padding-left:20px;padding-top:3px;>密码</span>
+<INPUT name=Password type=password tabindex=2 style=width:120px;height:18px;padding:0px;>&nbsp;
+<input type=button value=登录  onClick=SubmitForm()>&nbsp;
+<span id=GuestLoginSpan style=color:#5555ff;cursor:hand;display:none; onclick=GuestLogin()>以游客身份登录</span>
+<img id=LoginImg style=display:none;>
+</form>
+</div>
+
+</body>
+<script language=javascript>
+var nInterval = 0;
+var nStartCnt = 0;
+
+function SubmitForm()
+{
+	var userName = document.getElementsByName("UserName")[0].value;
+	var password = document.getElementsByName("Password")[0].value;
+	if (userName == "")
+	{
+		alert("请填写用户名。");
+		return;
+	}
+	if (password == "")
+	{
+		alert("请填写密码。");
+		return;
+	}
+	document.forms[0].submit();
+}
+
+function CheckHint(nType)
+{
+	switch (nType)
+	{
+		case 3:
+			alert("用户名或密码错误");
+			break;
+		case 4:
+			alert("非法客户端登录。");
+			window.external.close();
+			break;
+		case 5:
+			alert("已禁止使用IE浏览器登录。");
+			window.external.close();
+			break;
+		case 6:
+			alert("非允许网段登录。");
+			CloseLogin();
+			break;
+		case 7:
+			alert("对不起，您的账户未开通或已离职。");
+			window.external.close();
+			break;
+		default:
+			break;
+	}
+}
+
+function RequestString(sName)
+{
+var iPos, sReturn, strQuery;
+	iPos = window.document.location.href.indexOf("?");
+	strQuery = window.document.location.href.substr(iPos, window.document.location.href.length - iPos);
+	iPos = strQuery.toLowerCase().indexOf("?" + sName.toLowerCase() + "=");
+	if (iPos == -1)
+	{
+		iPos = strQuery.toLowerCase().indexOf("&" + sName.toLowerCase() + "=");
+		if (iPos == -1)
+			return "";
+	}
+	sReturn = strQuery.substr(iPos + sName.length + 2,strQuery.length-(iPos + sName.length + 2));
+	iPos = sReturn.indexOf("&");
+	if (iPos != -1)
+		sReturn = sReturn.substr(0, iPos);
+	return sReturn;
+}
+
+function PressKey()
+{
+	if ((event.keyCode == 13) || (event.keyCode == 10))
+	{
+		if (event.srcElement == document.all.Password)
+			SubmitForm();
+		else
+			document.all.Password.focus();
+	}
+}
+</script>
+</html>

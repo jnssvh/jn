@@ -1,0 +1,114 @@
+<HTML>
+<HEAD>
+	<meta http-equiv="Content-Type" content="text/html; charset=GBK">
+	<meta HTTP-EQUIV=Expires CONTENT=0>
+	<Link rel="stylesheet" type="text/css" href="pop.css">
+	<title>HTML对象属性定义(Properties)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</title>
+	<script language=javascript src=psub.jsp></script>
+</head>
+<body bgcolor=menu onload=InitObject(window.dialogArguments)>
+<img src=pic/property.gif onclick=InitObject(window.dialogArguments) style=cursor:hand>&nbsp;
+<select id=TargetObjSel style=width:80% onchange=TargetChange(this)></select>&nbsp;
+<img id=GoParentImg src=pic/gotop.gif onclick=InitObject(targetObj.parentNode) style=cursor:hand>
+<div style=width:100%;height:350px;overflow-y:auto;>
+<table id=PropTab width=100% border=0 cellpadding=1 cellspacing=1 align=center bgcolor=appworkspace style=position:absolute;>
+</table></div>
+<script language="JavaScript">
+var targetObj;
+function InitObject(obj)
+{
+var x, aItem, oOption;
+	if (targetObj == obj)
+		return;
+	targetObj = obj;
+	if (targetObj == targetObj.ownerDocument.body)
+		document.all.GoParentImg.style.display = "none";
+	else
+		document.all.GoParentImg.style.display = "inline";
+	if (typeof(targetObj) != "object")
+		return;
+	targetObj.ownerDocument.execCommand("Unselect");
+	targetObj.focus();
+	TargetObjSel.innerHTML = "";
+	for (x = PropTab.rows.length - 1; x >= 0; x--)
+		PropTab.deleteRow(x);
+	oOption = document.createElement("OPTION");
+	TargetObjSel.options.add(oOption);
+	oOption.innerText = targetObj.tagName + "  " + targetObj.id;
+	oOption.value = -1;
+	for (x = 0; x < targetObj.all.length; x++)
+	{
+		oOption = document.createElement("OPTION");
+		TargetObjSel.options.add(oOption);
+		oOption.innerText = targetObj.all[x].tagName + "  " + targetObj.all[x].id;
+		oOption.value = x;
+	}
+	aItem = GetObjItems(targetObj.style, targetObj.style);
+	InsertTableItem(aItem, PropTab, targetObj.style, ".", "_");
+	aItem = GetObjItems(targetObj.attributes, targetObj);
+	InsertTableItem(aItem, PropTab, targetObj, "", "");
+}
+
+function GetObjItems(obj1, obj)
+{
+var key, aItem, x;
+	aItem = new Array();
+	x = 0;
+	for (key in obj1)
+	{
+		if ((typeof(obj[key]) != "object") && (typeof(obj[key]) != "undefined") && (typeof(obj[key]) != "function"))
+		{
+			aItem[x] = key;
+			x ++;
+		}
+	}
+	return aItem.sort();
+}
+
+function InsertTableItem(aItem, oTable, obj, preStr, preName)
+{
+var x, oTR, oTD;
+	var func = new Function("ConfirmProp(this);");
+	for (x = 0; x < aItem.length; x++)
+	{
+		oTR = oTable.insertRow();
+		oTD = oTR.insertCell();
+		oTD.bgColor = "menu";
+		oTD.innerText = preStr + aItem[x];
+		oTD = oTR.insertCell();
+		oTD.bgColor = "captiontext";
+		oTD.innerHTML = "<input onchange=this.bChange=1 onblur=ConfirmProp(this) name='" + preName + aItem[x] + 
+			"' value='" + obj[aItem[x]] + "' bChanged=0 style=border:none;>"
+	}
+}
+
+function ConfirmProp(obj)
+{
+	try
+	{
+		if (obj.bChange == 1)
+		{
+			if (obj.name.substr(0, 1) == "_")
+				targetObj.style[obj.name.substr(1)] = obj.value;
+			else
+				targetObj[obj.name] = obj.value;
+		}
+	}
+	catch (e)
+	{
+			if (obj.name.substr(0, 1) == "_")
+				obj.value = targetObj.style[obj.name.substr(1)];
+			else
+				obj.value = targetObj[obj.name];
+	}
+}
+
+function TargetChange(oSelect)
+{
+	var obj  = targetObj.all[oSelect.value];
+	oSelect.selectedIndex = -1;
+	InitObject(obj);
+}
+</SCRIPT>
+</body></html>

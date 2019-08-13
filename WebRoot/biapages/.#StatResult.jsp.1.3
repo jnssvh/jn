@@ -1,0 +1,459 @@
+<%@ page language="java" pageEncoding="gbk"%>
+<%@ page trimDirectiveWhitespaces="true" %> 
+<%@ page import="com.jaguar.*, java.util.*,java.sql.*, project.*,java.net.URLEncoder"%>
+<%@ taglib uri="/WEB-INF/jaguar.tld" prefix="j" %>
+
+<%!
+%>
+<%
+// ServerChapterPageStartCode
+	JDatabase jdb = new JDatabase();
+	jdb.InitJDatabase();
+	Cookie cookie[] = request.getCookies();
+	int loginType = WebChar.ToInt(WebUser.GetCookie(cookie, "loginType"));
+	WebUser user = null;
+	user = new SysUser();
+	int result = user.initWebUser(jdb, cookie);
+	if (result != 1)
+	{//如果cookie丢失，就从命令行取出账户，重设cookie
+		String EName = WebChar.requestStr(request, "UserName");
+		Cookie [] ck = new Cookie[2];
+		ck[0] = new Cookie("loginname", EName);
+		ck[1] = new Cookie("loginpassword", WebChar.requestStr(request, "Password"));
+		result = user.initWebUser(jdb, ck);
+		if (result != 1)
+		{
+			jdb.closeDBCon();
+			response.sendRedirect("../bia/login.jsp");
+			return;
+		}
+		response.addCookie(ck[0]);
+		response.addCookie(ck[1]);
+		response.setHeader("P3P","CP=CAO PSA OUR");
+	}
+	boolean isAdmin = user.isAdmin();
+	String CodeName="StatResult";
+	int Purview = 16;
+	if (!isAdmin)
+	{
+		Purview = jdb.getIntBySql(0, "select top 1 Purview from ObjRight where ObjType=10 and ObjParam='StatResult' and GroupID in (" +
+			user.MemberGroupIDs + ") order by Purview desc");
+	}
+	request.getSession().setAttribute("UserAgent", request.getHeader("User-Agent"));
+	request.getSession().setAttribute("UserName", loginType + "." + user.EMemberName + "--" + user.CMemberName + "--" + user.PhotoID);
+	request.getSession().setAttribute("UserIP", request.getRemoteAddr());
+	SysApp sysApp = new SysApp(jdb);
+//@@##179:服务器启动代码(归档用注释,切勿删改)
+//
+
+	if (WebChar.RequestInt(request, "LoadSynthesize") == 1)
+	{
+		String items = "";
+		out.print(items);
+		jdb.closeDBCon();
+		return;
+	}
+	
+	if (WebChar.RequestInt(request, "LoadCompanys") == 1)
+	{
+		int statPlanId = WebChar.RequestInt(request, "statPlanId");
+		String companys = jdb.getStringBySql(0, "select companys from asStatPlan where ID=" + statPlanId);
+		String items = jdb.getJsonBySql(0, "select ID, comName as item from company where ID in (" + companys + ")");
+		out.print(items);
+		jdb.closeDBCon();
+		return;
+	}
+	
+	if (WebChar.RequestInt(request, "LoadStatResult") == 1)
+	{
+		int comId = WebChar.RequestInt(request, "comId");
+		int statPlanId = WebChar.RequestInt(request, "statPlanId");
+		ResultSet rs = jdb.rsSQL(0, "select * from asStatPlan where ID=" + statPlanId);
+		if (!rs.next())
+		{
+			rs.close();
+			jdb.closeDBCon();
+			return;
+		}
+		
+		int asSysMainId = rs.getInt("asSysMainId");
+		String beginTime = rs.getString("beginTime");
+		String endTime = rs.getString("endTime");
+		String companys = rs.getString("companys");
+		rs.close();
+		String sql = "select ID, detailName from asInvestPlanDetail where beginTime>='" + beginTime + "' and endTime<='" + endTime 
+			+ "' and mainId in (select ID from asInvestPlan where asSysMainId=" + asSysMainId + ") order by beginTime";
+		String interval = jdb.getJsonBySql(0, sql);
+		sql = "select InvestDetailId, statSysDetailId, statMethodId, sValue, fillValue from asStatResult where statPlanId=" + statPlanId + " and comId=" + comId;
+		String items = jdb.getJsonBySql(0, sql);
+		out.print("{interval:" + interval + ", result:" + items + "}");
+		jdb.closeDBCon();
+		return;
+	}
+	
+	String option = WebChar.requestStr(request, "option");
+	if (VB.isNotEmpty(option)) {
+		if (option.equals("GetData")) {
+		//stat_case":id1, "stat_type" : type, "index"
+			int statCase = WebChar.RequestInt(request, "stat_case");
+			int statType = WebChar.RequestInt(request, "stat_type");
+			int index = WebChar.RequestInt(request, "index");
+			int comId = WebChar.RequestInt(request, "com_id");
+			bia.index.IndexData data = new bia.index.IndexData();
+			data.init(jdb, request, null);
+			String dataStr = data.getDataByIndex(statType, statCase, index, 0, comId);
+		}
+		jdb.closeDBCon();
+		return;
+	}
+//(归档用注释,切勿删改)ServerStartCode End##@@
+%>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>方案结果</title>
+	<META http-equiv="Content-Type" content="text/html; charset=GBK">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2">
+	<link rel="stylesheet" type="text/css" href="../forum.css">
+	<link rel="stylesheet" type="text/css" href="../res/font/iconsfont.css">
+<!-- 本代码由Jaguar开发平台自动生成 2019-4-28 -->
+	<script type="text/javascript" src="../com/jquery.js"></script>
+	<script type="text/javascript" src="../com/jcom.js"></script>
+	<script type="text/javascript" src="../com/page.js"></script>
+	<script type="text/javascript" src="chapters.json"></script>
+	<script type="text/javascript" src="local.js"></script>
+<script type="text/javascript" src="<j:Prop key="ContextPath"/>js/ECharts/dist/echarts.min.js" charset='UTF-8'></script>
+<script type="text/javascript" src="<j:Prop key="ContextPath"/>biapages/charts.js"></script>
+<script type="text/javascript">
+var sys = {EName:"<%=user.EMemberName%>", CName:"<%=user.CMemberName%>", nType:<%=loginType%>, PhotoID:<%=user.PhotoID%>, PageName:"StatResult", Role:<%=Purview%>};
+var env = {com:"../com", proj:"../bia", fvs:"../biafvs", flow:"../biaflow", page:"../biapages"};
+var book;
+window.onload = function()
+{
+	var LayerConfig = {width:794,height:1123};
+	var aFace = {};
+	var cfg = {docwidth:LayerConfig.width, docheight:LayerConfig.height};
+	book = new $.jcom.BookPage(aFace, Chapters, sys, cfg);
+	if (sys.Role == 0)
+	{
+		$("#Page").html("<div align=center style='color:red;padding-top:100px;font:normal normal normal 24px 微软雅黑'>没有权限使用本页面</div>");
+		$("#Page").css({background: "#e9ebee url(../res/skin/wall.jpg) repeat;"});
+		return;
+	}
+//@@##180:客户端加载时(归档用注释,切勿删改)
+//创建对象:Filter
+	var o = book.setDocTop("加载中...", "Filter", "");
+	book.Filter = new $.jcom.DBCascade(o, env.fvs + "/asStatPlan_view.jsp", {}, {}, {title:["统计方案","统计类别"]});
+	book.Filter.onclick = ClickFilter;
+	book.setPageObj(book.Filter);
+
+//创建对象:Page
+	var o = book.getDocObj("Page")[0];
+	book.Page = new AsSysStatResultView(o, 0, {title:"统计报告", mode:3});
+
+//
+
+//(归档用注释,切勿删改)ClientStartCode End##@@
+};
+
+//@@##181:客户端自定义代码(归档用注释,切勿删改)
+//
+
+function ClickFilter(obj, item)
+{
+	var node = "";
+	if (typeof obj == "object")
+		node = $(obj).attr("node");
+	var ss = node.split(",");
+	switch (ss.length)
+	{
+	case 1:
+		book.Filter.loadLegend([{item:"综合统计"},{item:"企业统计"},{item:"企业查询"}], node);
+		book.Filter.SkipPage(1, true);
+		book.Page.reload(item.asSysMainId, item.ID);
+		break;
+	case 2:
+		var statplan = book.Filter.getselItem(0);
+		switch (item.item)
+		{
+		case "综合统计":
+			var casitems = book.Filter.getCasItems();
+			if (casitems.length == 3)
+				book.Filter.RemoveLegend();
+			$.get(location.pathname, {LoadSynthesize:1, StatPlanId:statplan.ID}, function (data)
+			{
+//				alert(data);
+			});
+			break;
+		case "企业统计":
+			$.get(location.pathname, {LoadCompanys:1, statPlanId:statplan.ID}, function (data)
+			{
+				var coms = $.jcom.eval(data);
+				book.Filter.AddLegend("企业列表", coms);
+			});
+			break;
+		case "企业查询":
+			break;
+		}
+		break;
+	case 3:
+		var statplan = book.Filter.getselItem(0);
+		var typeitem = book.Filter.getselItem(1);
+		if (typeitem.item == "企业统计")
+		{
+			book.Page.LoadCom(item.ID);
+		}
+		break;
+	default:
+		alert(22)
+	break;
+	}
+}
+
+function AsSysStatResultView(domobj, SysId, cfg)		//统计方案评估体系选项
+{
+	var self = this;
+	var statPlanId;
+	var methodEditor, weightEditor;
+	self.grid = undefined;
+
+	this.reload = function (id, statId, option)
+	{
+		SysId = id;
+		statPlanId = statId;
+		if (self.grid == undefined)
+		{
+			self.grid = new $.jcom.DBGrid(domobj, env.fvs + "/asSysDetail_view.jsp", 
+					{URLParam:"?asSysId=" + id, formitemstyle:"font:normal normal normal 16px 微软雅黑", formvalstyle:"width:400px",gridtree:2},
+					{SeekKey:"", SeekParam:""}, {gridstyle:1, footstyle:4, initDepth:4, nowrap:0, resizeflag:0});
+			self.grid.PrepareData = PrepareGrid;
+			self.grid.bodyonload = onGridReady;
+			self.grid.click = getChartData;
+			var title = cfg.title;
+			if (title.substr(0, 1) != "<")
+				title = "<h2 align=center>" + title + "</h2>"
+			self.grid.TitleBar(title);
+		}
+		else
+		{
+			self.grid.config({URLParam:"?asSysId=" + id});
+			self.grid.ReloadGrid();
+		}
+		cfg = $.jcom.initObjVal(cfg, option);
+	};
+	
+	
+	
+	function loadComOK(data)
+	{
+		alert(data);
+		var o = $.jcom.eval(data);
+		var tree = self.grid.getData();
+		var items = [];
+		TreeToList(tree, items);
+		var list = [];
+		for (var x = 0; x < items.length; x++)
+		{
+			items[x].itemCName.rowspan = o.interval.length;
+			items[x].dt = o.interval[0].detailName;
+			items[x].sValue = "";
+			items[x].fillValue = "";
+			list[list.length] = items[x];
+			for (var y = 1; y < o.interval.length; y++)
+			{
+				list[list.length] = {dt: o.interval[y].detailName, sValue:"", fillValue:""};
+			}
+		}
+		self.grid.reload(list);
+	}
+	
+	function TreeToList(tree, items)
+	{
+		for (var x = 0; x < tree.length; x++)
+		{
+			items[items.length] = tree[x];
+			if (typeof tree[x].child == "object")
+			{
+				TreeToList(tree[x].child, items);
+				tree[x].child = undefined;
+			}
+		}
+	}
+	
+	this.LoadCom = function (comId)
+	{
+			$.get(cfg.jsp, {LoadStatResult:1, statPlanId: statPlanId, comId:comId}, loadComOK);
+	};
+		
+	function PrepareGrid(items, head, depth)
+	{
+		if (depth == undefined)
+		{
+			depth = 0;
+			for (var x = 0; x < head.length; x++)
+			{
+				switch (head[x].FieldName)
+				{
+				case "itemCName":
+					head[x].nShowMode = 1;
+					break;					
+				case "method":
+				case "info":
+				case "dataType":
+				case "weight":
+					head[x].nShowMode = 6;
+					break;					
+				}
+			}
+			head.splice(1, 0, {FieldName:"dt", TitleName:"时间段", width:100},{FieldName:"sValue", TitleName:"指数值", width:100},{FieldName:"fillValue", TitleName:"指标值", width:100});
+		}
+		for (var x = 0; x < items.length; x++)
+		{
+			items[x].itemCName = {value:items[x].itemCName, style:"font:normal normal normal " + (18 - depth * 2) + "px 微软雅黑;"}
+			if (typeof items[x].child == "object")
+			{
+				if (items[x].child.length == 0)
+					items[x].child = undefined;
+				else
+					PrepareGrid(items[x].child, head, depth + 1);
+			}
+			if (typeof items[x].child != "object")
+				items[x].info = {value:items[x].info, style:"font:normal normal normal 13px 楷体;"};
+		}
+//		var root = {}
+//		if (depth == 0)
+//			$.get(cfg.jsp, {LoadStatSysDetail:1, statPlanId: statPlanId}, loadStatOK);
+		return items;
+	}
+	
+	function onGridReady()
+	{
+		if (cfg.editMode == 1)
+		{
+			if (methodEditor == undefined)
+			{
+				methodEditor = self.grid.attachEditor("method");
+				weightEditor = self.grid.attachEditor("weight");
+			}
+			else
+			{
+				self.grid.attachEditor("method", methodEditor);
+				self.grid.attachEditor("weight", weightEditor);
+			}
+		}
+		else
+		{
+				self.grid.detachEditor("method");
+				self.grid.detachEditor("weight");
+		}
+	}
+	
+	cfg = $.jcom.initObjVal({editMode:0, title:"", jsp:location.pathname}, cfg);
+	if (SysId > 0)
+		this.reload(SysId);
+}
+
+//************************
+function getChartData(oTd, ent) {
+//检查统计图
+
+	
+	
+	var id = oTd.parentNode.getAttribute("node");
+	var data = book.Page.grid.getData();
+	var item1 = book.Filter.getselItem(0);
+	var item2 = book.Filter.getselItem(1);
+	var id1 = item1.ID;
+	var comId = "";
+	var viewChart = null;
+	var id2 = (function(){
+		var type;
+		switch(item2.item) {
+		case "综合统计":
+			type = 1;
+		break;
+		case "企业统计":
+			var item3 = book.Filter.getselItem(2);
+			comId = item3.ID;
+			type = 2;
+		break;
+		case "企业查询":
+			type = 3;
+		break;
+		default:
+			type = 0;
+		break;
+		}
+		return type;
+	})();
+	var id3 = data[id].ID;
+	$.get("StatResult.jsp", {"option":"GetData", "stat_case":id1, "stat_type" : id2, "index": id3, "com_id":comId}
+		, viewChart1);
+}
+
+
+function viewChart1(data) {
+	var selObj = book.Page.grid.getsel();
+	var trObj = selObj.getObj();
+	var indexName = trObj.cells[0].innerText;
+	var id = trObj.getAttribute("node");
+	var data = book.Page.grid.getData();
+	var item1 = book.Filter.getselItem(0);
+	var yearName = "";
+	if (/^\d+年/.test(item1.item)) {
+		yearName = item1.item.replace(/年.*/, "年");
+	}
+	var item2 = book.Filter.getselItem(1);
+
+	switch(item2.item) {
+	case "综合统计":
+		type = 1;
+		indexName =yearName + indexName + "综合统计";
+		data = "[['季度','第一季度','第二季度','第三季度','第四季度'],['指数',0.22,0.3,0.5,0.6]]";
+		viewChart11(0, indexName, data);
+		
+		//indexName =yearName + indexName + "度栖霞区20家整体企业中TOP10企业综合指数值及其排名";
+		data = "[['企业','南京德塔博思信息科技有限公司','南京御通信息技术有限公司','南京天华中安通信技术有限公司','南京安石格心信息科技有限公司'],['指数',0.22,0.3,0.5,0.6]]";
+		viewChart12(1, indexName, data);
+		
+		data = "[['季度','第一季度','第二季度','第三季度','第四季度'],['指数',0.22,0.3,0.5,0.6]]";
+		viewChart3(2, indexName, data);
+		
+		data = "[['企业','南京德塔博思信息科技有限公司','南京御通信息技术有限公司','南京天华中安通信技术有限公司','南京安石格心信息科技有限公司'],['指数',0.22,0.3,0.5,0.6]]";
+		viewChart4(3, indexName, data);
+	break;
+	case "企业统计":
+		var item3 = book.Filter.getselItem(2);
+		comId = item3.ID;
+		type = 2;
+		indexName = item3.item + yearName + "各季度" + indexName + "情况";
+		
+		data = "[['季度','第一季度','第二季度','第三季度','第四季度'],['指数',0.22,0.3,0.5,0.6]]";
+		viewChart11(0, indexName, data);
+		
+		data = "[['季度','第一季度','第二季度','第三季度','第四季度'],['指数',0.22,0.3,0.5,0.6]]";
+		viewChart21(1, indexName, data);
+		
+		
+		data = "[['季度','第一季度','第二季度','第三季度','第四季度'],['指数',0.22,0.3,0.5,0.6]]";
+		viewChart22(2, indexName, data);
+	break;
+	case "企业查询":
+		type = 3;
+	break;
+	default:
+		type = 0;
+	break;
+	}
+}
+
+
+//(归档用注释,切勿删改)ClientJSCode End##@@
+</script>
+</head>
+<body>Loading...
+</body>
+</html>
+<%
+	jdb.closeDBCon();
+%>

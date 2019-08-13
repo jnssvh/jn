@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META http-equiv='Content-Type' content='text/html; charset=GBK'>
+	<meta http-equiv='MSThemeCompatible' content='Yes'>
+	<title>插入图片</title>
+	<link rel='stylesheet' type='text/css' href='forum.css'>
+	<script type="text/javascript" src="psub.jsp"></script>
+	<script type="text/javascript" src="common.js"></script>
+</HEAD>
+<body bgcolor=menu  topmargin=10px leftmargin=15px>
+<input name=AffixID type=hidden value=0>
+<span style=width:100px;>图片来源</span><input name=FileName type=text style=width:205px;><input 
+name=SeleFileButton type=button value=浏览 onclick=StartSubmitLocalFile(this)>&nbsp;
+<input type=submit onclick=SubmitFile() value="确定" style=width:60px><br><span id=Hint></span><br>
+<span style=width:100px;>替换文字</span><input name=TitleName type=text style=width:250px;>&nbsp;
+<input type=submit onclick=window.close() value="取消" style=width:60px;><br>
+<br>
+<table width=350px><tr><td>
+<fieldset id=ServerSet><legend style=FONT-SIZE:9pt>布局</legend>
+<span style=width:100px;>对齐</span>
+<select name=AlignSet style=width:100px;>
+<option value="" selected>未设置
+<option value="left">左齐
+<option value="right">右齐
+<option value="texttop">文本上文
+<option value="absmiddle">正中央
+<option value="baseline">基线
+<option value="absbottom">正下方
+<option value="bottom">下方
+<option value="middle">中央
+<option value="top">上方</select><br>
+<span style=width:108px;>边框宽度</span><INPUT name=BorderWidth type=text style=width:100px><br></fieldset>
+</td><td>
+<fieldset id=ServerSet><legend style=FONT-SIZE:9pt>间隔</legend>
+<span style=width:50px;>水平</span><INPUT name=hspace type=text size=4><br>
+<span style=width:50px;>垂直</span><INPUT name=vspace type=text size=4></fieldset></td></tr></table>
+<iframe id=FormDataFrame name=FormDataFrame style='display:none;'></iframe>
+</BODY>
+<script language=javascript>
+function InitDoc()
+{
+}
+
+function SubmitFile()
+{
+	if(!/^(|0)$/.test(document.all.AffixID.value)) {
+		var img = "<img";
+		if (document.all.AlignSet.value != "")
+			img += " align='" + document.all.AlignSet.value + "'";
+		if (document.all.TitleName.value != "")
+			img += " alt='" + document.all.TitleName.value + "'";
+		if (parseInt(document.all.BorderWidth.value) > 0)
+			img += " border='" + document.all.BorderWidth.value + "'";
+		if (parseInt(document.all.hspace.value) > 0)
+			img += " hspace='" + document.all.hspace.value + "'";
+		if (parseInt(document.all.vspace.value) > 0)
+			img += " vspace='" + document.all.hspace.value + "'";
+		if (document.all.AffixID.value > 0)
+			img += " src='../com/down.jsp?inpage=true&AffixID=" + document.all.AffixID.value + "'>";
+		else
+			img += " src='" + document.all.FileName.value + "'>";
+		window.returnValue = img;
+	}
+	window.close();
+}
+
+function StartSubmitLocalFile(obj)
+{
+	document.all.FormDataFrame.src = "uploadform.jsp?ParentName=临时共享图片&loadtype=jpg,jpeg,gif,png";
+	window.setTimeout(function(){SubmitLocalFile(obj)}, 500);
+}
+
+function SubmitLocalFile(obj)
+{
+	try
+	{
+		document.all.FormDataFrame.contentWindow.document.all.LocalName.click();
+	}
+	catch (e)
+	{
+		window.setTimeout("SubmitLocalFile()", 500);
+		return;
+	}
+	if (document.all.FormDataFrame.contentWindow.document.all.LocalName.value == "")
+		return;
+	window.img = new Image();
+	img.onload = function(){
+		if (checkLimitForImage(window.img.fileSize, window.img.width, window.img.height)) {
+			(function(){
+				if(!window.g_hasSubmitOutside){
+					document.all.Hint.innerText = "正在上传图片,请等待...";
+					document.all.FormDataFrame.contentWindow.SubmitForm();
+				}
+			})();
+		}
+		img = null;
+	};
+	img.src = document.all.FormDataFrame.contentWindow.document.all.LocalName.value;
+	// 上面那里不会触发img.onload导致不能submit lxt 2016.3.29
+	document.all.FormDataFrame.contentWindow.SubmitForm();
+	window.g_hasSubmitOutside=true;
+}
+
+function checkLimitForImage(sizeOfImage, widthOfImage, heightOfImage) {
+	var result = false;
+	var isSize = false, isWidth = false, isHeight = false;
+	if (maxSizeOfImage < 0 && maxWidthOfImage < 0 && maxHeightOfImage < 0) {
+		result = true;
+	} else if (maxSizeOfImage == 0 || maxWidthOfImage == 0 || maxHeightOfImage == 0) {
+		alert("系统限制，不能上传图片。");
+		result = false;
+	} else {
+		if (maxSizeOfImage > 0) {
+			if (sizeOfImage <= maxSizeOfImage * 1024) {
+				isSize = true;
+			} else {
+				alert("文件大小(" + (sizeOfImage+"").replace(/(\d{1,2})(\d{3})(?=(\d{3})*$)/g, "$1,$2")
+					 + "B)超出限制" + maxSizeOfImage + "KB。");
+				return false;
+			}
+		} else {
+			isSize = true;
+		}
+		if (maxWidthOfImage > 0) {
+			if (widthOfImage <= maxWidthOfImage) {
+				isWidth = true;
+			} else {
+				alert("图像宽度(" + widthOfImage + "像素)超出限制" + maxWidthOfImage + "像素。");
+				return false;
+			}
+		} else {
+			isWidth = true;
+		}
+		if (maxHeightOfImage > 0) {
+			if (heightOfImage <= maxHeightOfImage) {
+				isHeight = true;
+			} else {
+				alert("图像高度(" + heightOfImage + "像素)超出限制" + maxHeightOfImage + "像素。");
+				return false;
+			}
+		} else {
+			isHeight = true;
+		}
+		result = isSize && isWidth && isHeight;
+	}
+	return result;
+}
+
+function SubmitLocalFileOK(FileType, AffixID, FileCName)
+{
+	document.all.AffixID.value = AffixID;
+	document.all.FileName.value = FileCName;
+	document.all.SeleFileButton.disabled = false;
+	document.all.Hint.innerText = "图片上传完成";
+}
+
+function getProp( str, propRegExp )
+{
+	var result = "";
+	var arr = propRegExp.exec(str);
+	if ( arr != null ) {
+		result = arr[1];
+	} else {
+		result = "";
+	}
+	return result;
+}
+
+var maxSizeOfImage = -1;
+var maxWidthOfImage = -1;
+var maxHeightOfImage = -1;
+window.onload = function() {
+	AjaxRequestPage("../sysconfig.jsp?type=GetData&sub_type=system_image_limit", true, "", function(str){
+		var val = "";
+		val = getProp(str, /[\s\S]*<ename>system_image_limit_size<\/ename><ParamValue>(.*?)<\/ParamValue>.*/);
+		if (val != "") {
+			maxSizeOfImage = parseInt(val);
+		}
+		val = getProp(str, /[\s\S]*<ename>system_image_limit_width<\/ename><ParamValue>(.*?)<\/ParamValue>.*/);
+		if (val != "") {
+			maxWidthOfImage = parseInt(val);
+		}
+		val = getProp(str, /[\s\S]*<ename>system_image_limit_height<\/ename><ParamValue>(.*?)<\/ParamValue>.*/);
+		if (val != "") {
+			maxHeightOfImage = parseInt(val);
+		}
+	});
+};
+</SCRIPT>
+</HTML>
